@@ -8,7 +8,7 @@ int main()
     char name[SIZE];
     while (1)
     {
-        printf("Choose: opening/creating/deleting a new file(read/create/delete/exit): ");
+        printf("Choose: opening/creating/deleting a new file(open/create/delete/exit): ");
         scanf("%s", &input);
         if (strcmp(input, "create") == 0)
         {
@@ -24,11 +24,12 @@ int main()
             strcat(name, ".txt");
             DeleteFile(name);
         }
-        else if (strcmp(input, "read") == 0)
+        else if (strcmp(input, "open") == 0)
         {
             printf("Please, enter the name of a file without the format (example): ");
             scanf("%s", &name);
-            ReadFile(name);
+            strcat(name, ".txt");
+            OpenFile(name);
         }
         else
         {
