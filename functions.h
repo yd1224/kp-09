@@ -4,6 +4,13 @@
 #include <ctype.h>
 #include <math.h>
 #include <stdbool.h>
+#include <stdlib.h>
+#define MAX_LINE 2048
+#define TEMP_SIZE 100
+void InitialText()
+{
+    printf("                     Oblast                           Population                   Square\n");
+}
 bool isScientificNotation(const char *input)
 {
     int len = strlen(input);
@@ -61,7 +68,91 @@ double getInput(const char *prompt)
 
     return number;
 }
+int PasteLine(const char *name)
+{
+    FILE *file_ptr, *temp;
+    char temp_filename[TEMP_SIZE];
+    char buffer[MAX_LINE];
+    char newLine[MAX_LINE];
+    strcpy(temp_filename, "temp____");
+    strcat(temp_filename, name);
+    int write_line = getInput("Line number: ");
+    printf("New line: ");
+    fflush(stdin);
+    fgets(newLine, MAX_LINE, stdin);
+    file_ptr = fopen(name, "r");
+    temp = fopen(temp_filename, "w");
+    if (file_ptr == NULL || temp == NULL)
+    {
+        char buf[256];
+        strerror_r(errno, buf, 256);
+        printf("Error opening file(s) because: %s\n", buf);
+        return 1;
+    }
+    bool keep_reading = true;
+    int current_line = 1;
+    do
+    {
+        fgets(buffer, MAX_LINE, file_ptr);
+        if (feof(file_ptr))
+        {
+            keep_reading = false;
+        }
+        else if (write_line == current_line)
+        {
+            fputs(newLine, temp);
+            fputs(buffer, temp);
+        }
+        else
+        {
+            fputs(buffer, temp);
+        }
+        current_line += 1;
+    } while (keep_reading);
+    fclose(file_ptr);
+    fclose(temp);
+    remove(name);
+    rename(temp_filename, name);
+}
+int DeleteLine(const char *name)
+{
+    FILE *file_ptr, *temp;
+    char temp_filename[TEMP_SIZE];
+    char buffer[MAX_LINE];
 
+    strcpy(temp_filename, "temp____");
+    strcat(temp_filename, name);
+
+    int delete_line = getInput("\nDelete line number: ");
+    file_ptr = fopen(name, "r");
+    temp = fopen(temp_filename, "w");
+    if (file_ptr == NULL || temp == NULL)
+    {
+        char buf[256];
+        strerror_r(errno, buf, 256);
+        printf("Error opening file(s) because: %s\n", buf);
+        return 1;
+    }
+    bool keep_reading = true;
+    int current_line = 1;
+    do
+    {
+        fgets(buffer, MAX_LINE, file_ptr);
+        if (feof(file_ptr))
+        {
+            keep_reading = false;
+        }
+        else if (delete_line != current_line)
+        {
+            fputs(buffer, temp);
+        }
+        current_line += 1;
+    } while (keep_reading);
+    fclose(file_ptr);
+    fclose(temp);
+    remove(name);
+    rename(temp_filename, name);
+}
 int CreateFile(const char *name)
 {
     FILE *file_ptr;
@@ -106,9 +197,8 @@ int ReadLine(const char *name)
 
     bool line_found = false;
     int current_line = 1;
-    const int MAX_LINE = 2048;
     char buffer[MAX_LINE];
-
+    InitialText();
     while (fgets(buffer, MAX_LINE, file_ptr) != NULL)
     {
         if (current_line == read_line)
@@ -144,8 +234,8 @@ int ReadFile(const char *name)
     }
     bool keep_reading = true;
     int current_line = 1;
-    const int MAX_LINE = 2048;
     char buffer[MAX_LINE];
+    InitialText();
     do
     {
         fgets(buffer, MAX_LINE, file_ptr);
@@ -175,7 +265,6 @@ void OpenFile(const char *name)
     printf("|   6    |      Sort file            |\n");
     printf("|   7    |      Change line          |\n");
     printf("+------------------------------------+\n");
-    printf("%s", name);
     int option = getInput("\nEnter your option: ");
     switch (option)
     {
@@ -185,5 +274,9 @@ void OpenFile(const char *name)
     case 2:
         ReadFile(name);
         break;
+    case 4:
+        PasteLine(name);
+    case 5:
+        DeleteLine(name);
     }
 }
