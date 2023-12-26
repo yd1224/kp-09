@@ -6,7 +6,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #define MAX_LINE 2048
-#define TEMP_SIZE 100
+#define TEMP_SIZE 1000
 #define BUFFER_SIZE 1000
 #define COLUMNS 3
 void printTableHeader()
@@ -91,10 +91,9 @@ void removeWhiteSpaces(char *str)
 
     str[length] = '\0';
 }
-int handleInput(FILE *file_ptr, const char *name, int linecount)
+int handleInput(FILE *file, const char *name, int linecount)
 {
     char buffer[BUFFER_SIZE];
-    // file_ptr = fopen(name, "a");
 
     char ***arr = (char ***)malloc(linecount * sizeof(char **));
     for (int i = 0; i < linecount; i++)
@@ -124,7 +123,7 @@ int handleInput(FILE *file_ptr, const char *name, int linecount)
         removeWhiteSpaces(buffer);
         strcpy(arr[i][2], buffer);
 
-        fprintf(file_ptr, "| %-35s | %-25s | %-25s |\n", arr[i][0], arr[i][1], arr[i][2]);
+        fprintf(file, "| %-35s | %-25s | %-25s |\n", arr[i][0], arr[i][1], arr[i][2]);
     }
     for (int i = 0; i < linecount; i++)
     {
@@ -135,19 +134,8 @@ int handleInput(FILE *file_ptr, const char *name, int linecount)
         free(arr[i]);
     }
     free(arr);
-    // return arr;
 }
 
-// int WriteLines(const char *name)
-// {
-//     char index[] = "write";
-//     int linecount = getInput("\nEnter number of lines you want to write: ");
-//     while ((getchar()) != '\n')
-//         ;
-//     FILE *file_ptr;
-//     handleInput(file_ptr, name, linecount, index);
-//     fclose(file_ptr);
-// }
 int WriteLines(const char *name)
 {
     int linecount = getInput("\nEnter number of lines you want to write: ");
@@ -174,15 +162,13 @@ int PasteLine(const char *name)
     FILE *file_ptr, *temp;
     char temp_filename[TEMP_SIZE];
     char buffer[MAX_LINE];
-    // char newLine[MAX_LINE];
-    char index[] = "paste";
+    char newLine[MAX_LINE];
     strcpy(temp_filename, "temp____");
     strcat(temp_filename, name);
     int write_line = getInput("Line number: ");
-    printf("New line: \n");
-    // fflush(stdin);
-    // fgets(newLine, MAX_LINE, stdin);
-
+    printf("New line: ");
+    fflush(stdin);
+    fgets(newLine, MAX_LINE, stdin);
     file_ptr = fopen(name, "r");
     temp = fopen(temp_filename, "w");
     if (file_ptr == NULL || temp == NULL)
@@ -197,26 +183,35 @@ int PasteLine(const char *name)
     do
     {
         fgets(buffer, MAX_LINE, file_ptr);
-        printf("1\n");
         if (feof(file_ptr))
         {
             keep_reading = false;
-            printf("2\n");
         }
         else if (write_line == current_line)
         {
-            printf("3\n");
-            handleInput(temp, temp_filename, 1);
+
+            printf("Enter the city: ");
+            fgets(newLine, MAX_LINE, stdin);
+            removeWhiteSpaces(newLine);
+            fprintf(temp, "| %-35s |", newLine);
+
+            printf("Enter the population: ");
+            fgets(newLine, MAX_LINE, stdin);
+            removeWhiteSpaces(newLine);
+            fprintf(temp, " %-25s |", newLine);
+
+            printf("Enter the square: ");
+            fgets(newLine, MAX_LINE, stdin);
+            removeWhiteSpaces(newLine);
+            fprintf(temp, " %-25s |\n", newLine);
             fputs(buffer, temp);
         }
         else
         {
-            printf("4\n");
             fputs(buffer, temp);
         }
         current_line += 1;
     } while (keep_reading);
-    printf("5\n");
     fclose(file_ptr);
     fclose(temp);
     remove(name);

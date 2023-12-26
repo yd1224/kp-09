@@ -1,0 +1,20 @@
+| ertyui                              | fyu                       | g                         |
+| tyui                                | ty                        | tyui                      |
+| OOOO                 | OOOOO                   | OOOOO                 |
+| OOO                                 | OOO                       | OOO                       |
+| ertyui                              | fyu                       | g                         |
+| tyui                                | ty                        | tyui                      |
+| OOOO                                  | OOOO                                  | OOOOO                                  |
+| ertyui                              | fyu                       | g                         |
+| OOOO                      | OOOO                      | OOOO                      |
+| tyui                                | ty                        | tyui                      |
+| PPP                                 | PPP                       | PPP                       |
+| ertyui                              | fyu                       | g                         |
+| tyui                                | ty                        | tyui                      |
+
+| LLLL                                | LL                        | LL                        |
+| LL                                  | LL                        | LL                        |
+| PP                                  | PP                        | PP                        |
+| PP                                  | PP                        | PP                        |
+| PP                                  | PP                        | PP                        |
+| PP                                  | PP                        | PP                        |
