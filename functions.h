@@ -9,6 +9,35 @@
 #define TEMP_SIZE 1000
 #define BUFFER_SIZE 1000
 #define COLUMNS 3
+#define CITY_NAME 100
+#define MORE_LINES 1024
+#define MORE_CHARS 1024
+struct data
+{
+    char cityName[CITY_NAME];
+    int population;
+    int square;
+};
+void removeWhiteSpaces(char *str)
+{
+    int start = 0, end = strlen(str) - 1;
+
+    while (str[start] == ' ' || str[start] == '\t' || str[start] == '\n' || str[start] == '\r')
+    {
+        start++;
+    }
+
+    while (end >= 0 && (str[end] == ' ' || str[end] == '\t' || str[end] == '\n' || str[end] == '\r'))
+    {
+        end--;
+    }
+
+    int length = end - start + 1;
+
+    memmove(str, str + start, length);
+
+    str[length] = '\0';
+}
 void printTableHeader()
 {
 
@@ -71,26 +100,121 @@ double getInput(const char *prompt)
 
     return number;
 }
-void removeWhiteSpaces(char *str)
+
+void processLines(char **lines, size_t total_lines)
 {
-    int start = 0, end = strlen(str) - 1;
-
-    while (str[start] == ' ' || str[start] == '\t' || str[start] == '\n' || str[start] == '\r')
+    for (size_t i = 0; i < total_lines; i++)
     {
-        start++;
+        char *token = strtok(lines[i], "|");
+        while (token != NULL)
+        {
+
+            printf("Field: %s\n", token);
+            token = strtok(NULL, "|");
+        }
+        printf("\n");
     }
-
-    while (end >= 0 && (str[end] == ' ' || str[end] == '\t' || str[end] == '\n' || str[end] == '\r'))
-    {
-        end--;
-    }
-
-    int length = end - start + 1;
-
-    memmove(str, str + start, length);
-
-    str[length] = '\0';
 }
+int SortFile(const char *name)
+{
+    struct data *a;
+    FILE *file;
+    file = fopen(name, "r");
+    if (file == NULL)
+    {
+        char buf[256];
+        strerror_r(errno, buf, 256);
+        printf("Error opening file(s) because: %s\n", buf);
+        return 1;
+    }
+    // char ***arr;
+
+    // Read All File Lines Into A Dynamically Allocated Array Of Strings
+    char **lines;
+
+    lines = (char **)malloc(sizeof(char *) * MORE_LINES);
+
+    size_t total_lines = 0;
+
+    size_t total_chars = 0;
+
+    char c;
+
+    do
+    {
+
+        c = fgetc(file);
+
+        if (ferror(file))
+        {
+            printf("Error reading from file.\n");
+            return 1;
+        }
+
+        if (feof(file))
+        {
+
+            if (total_chars != 0)
+            {
+
+                lines[total_lines] = (char *)realloc(lines[total_lines], total_chars + 1);
+
+                lines[total_lines][total_chars] = '\0';
+
+                total_lines++;
+            }
+
+            break;
+        }
+
+        if (total_chars == 0)
+        {
+            lines[total_lines] = (char *)malloc(MORE_CHARS);
+        }
+
+        lines[total_lines][total_chars] = c;
+
+        total_chars++;
+
+        if (c == '\n')
+        {
+
+            lines[total_lines] = (char *)realloc(lines[total_lines], total_chars + 1);
+
+            lines[total_lines][total_chars] = '\0';
+
+            total_lines++;
+
+            total_chars = 0;
+            if (total_lines % MORE_LINES == 0)
+            {
+                size_t new_size = total_lines + MORE_LINES;
+                lines = (char **)realloc(lines, sizeof(char *) * new_size);
+            }
+        }
+
+        else if (total_chars % MORE_CHARS == 0)
+        {
+            size_t new_size = total_chars + MORE_CHARS;
+            lines[total_lines] = (char *)realloc(lines[total_lines], new_size);
+        }
+
+    } while (true);
+    lines = (char **)realloc(lines, sizeof(char *) * total_lines);
+    for (size_t i = 0; i < total_lines; i++)
+    {
+        printf("%s", lines[i]);
+    }
+    // Sort File
+    processLines(lines, total_lines);
+    for (size_t i = 0; i < total_lines; i++)
+    {
+        free(lines[i]);
+    }
+    free(lines);
+    fclose(file);
+}
+
 int handleInput(FILE *file, const char *name, int linecount)
 {
     char buffer[BUFFER_SIZE];
@@ -157,7 +281,7 @@ int WriteLines(const char *name)
     return 0;
 }
 
-int PasteLine(const char *name)
+int PasteLine(const char *name, int write_line)
 {
     FILE *file_ptr, *temp;
     char temp_filename[TEMP_SIZE];
@@ -165,10 +289,10 @@ int PasteLine(const char *name)
     char newLine[MAX_LINE];
     strcpy(temp_filename, "temp____");
     strcat(temp_filename, name);
-    int write_line = getInput("Line number: ");
-    printf("New line: ");
+
+    // printf("New line: ");
     fflush(stdin);
-    fgets(newLine, MAX_LINE, stdin);
+    // fgets(newLine, MAX_LINE, stdin);
     file_ptr = fopen(name, "r");
     temp = fopen(temp_filename, "w");
     if (file_ptr == NULL || temp == NULL)
@@ -217,7 +341,7 @@ int PasteLine(const char *name)
     remove(name);
     rename(temp_filename, name);
 }
-int DeleteLine(const char *name)
+int DeleteLine(const char *name, int delete_line)
 {
     FILE *file_ptr, *temp;
     char temp_filename[TEMP_SIZE];
@@ -226,7 +350,6 @@ int DeleteLine(const char *name)
     strcpy(temp_filename, "temp____");
     strcat(temp_filename, name);
 
-    int delete_line = getInput("\nDelete line number: ");
     file_ptr = fopen(name, "r");
     temp = fopen(temp_filename, "w");
     if (file_ptr == NULL || temp == NULL)
@@ -255,6 +378,12 @@ int DeleteLine(const char *name)
     fclose(temp);
     remove(name);
     rename(temp_filename, name);
+}
+void ChangeLine(const char *name)
+{
+    int change_line = getInput("\nChange line number: ");
+    DeleteLine(name, change_line);
+    PasteLine(name, change_line);
 }
 int CreateFile(const char *name)
 {
@@ -369,6 +498,8 @@ void OpenFile(const char *name)
     printf("|   7    |      Change line          |\n");
     printf("+------------------------------------+\n");
     int option = getInput("\nEnter your option: ");
+    int write_line;
+    int delete_line;
     switch (option)
     {
     case 1:
@@ -377,14 +508,21 @@ void OpenFile(const char *name)
     case 2:
         ReadFile(name);
         break;
-    case 4:
-        PasteLine(name);
-        break;
-    case 5:
-        DeleteLine(name);
-        break;
     case 3:
         WriteLines(name);
         break;
+    case 4:
+        write_line = getInput("Line number: ");
+        PasteLine(name, write_line);
+        break;
+    case 5:
+        delete_line = getInput("\nDelete line number: ");
+        DeleteLine(name, delete_line);
+        break;
+    case 6:
+        SortFile(name);
+        break;
+    case 7:
+        ChangeLine(name);
     }
 }
