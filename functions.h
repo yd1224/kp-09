@@ -12,12 +12,12 @@
 #define CITY_NAME 100
 #define MORE_LINES 1024
 #define MORE_CHARS 1024
-struct data
+struct
 {
     char cityName[CITY_NAME];
     int population;
     int square;
-};
+} data;
 void removeWhiteSpaces(char *str)
 {
     int start = 0, end = strlen(str) - 1;
@@ -41,7 +41,7 @@ void removeWhiteSpaces(char *str)
 void printTableHeader()
 {
 
-    printf("| %-35s | %-25s | %-25s |\n", "Oblast", "Population", "Square");
+    printf(" %-25s| %-25s| %-25s\n", "Oblast", "Population", "Square");
 }
 bool isScientificNotation(const char *input)
 {
@@ -100,20 +100,169 @@ double getInput(const char *prompt)
 
     return number;
 }
-
-void processLines(char **lines, size_t total_lines)
+void swapStrings(char **prev, char **next, int total_lines, const char *name, char ***arr)
 {
+    char temp[TEMP_SIZE];
+    FILE *file_ptr, *temp_ptr;
+    char temp_filename[TEMP_SIZE];
+
+    strcpy(temp_filename, "temp____");
+    strcat(temp_filename, name);
+
+    // printf("New line: ");
+    // fflush(stdin);
+    // fgets(newLine, MAX_LINE, stdin);
+    file_ptr = fopen(name, "r");
+    temp_ptr = fopen(temp_filename, "w");
+
     for (size_t i = 0; i < total_lines; i++)
     {
-        char *token = strtok(lines[i], "|");
-        while (token != NULL)
+        for (int j = 0; j < COLUMNS; j++)
         {
-
-            printf("Field: %s\n", token);
-            token = strtok(NULL, "|");
+            printf("%s ", arr[i][j]);
         }
         printf("\n");
     }
+    for (int i = 0; i < total_lines; i++)
+    {
+        for (int j = 0; j < COLUMNS; j++)
+        {
+            if (j != COLUMNS - 1)
+            {
+                // removeSpacesAndNewLine(arr[i][j]);
+                fprintf(temp_ptr, " %-25s|", arr[i][j]);
+            }
+            else
+            {
+                // removeSpacesAndNewLine(arr[i][j]);
+                fprintf(temp_ptr, " %-25s", arr[i][j]);
+            }
+        }
+        fprintf(temp_ptr, "\n");
+    }
+    fclose(file_ptr);
+    fclose(temp_ptr);
+    remove(name);
+    rename(temp_filename, name);
+}
+void SortArray(char ***arr, int parameter, int total_lines, int mode, const char *name)
+{
+    // char temp[TEMP_SIZE];
+    if (mode == 1)
+    {
+        if (parameter == 1)
+        {
+            for (int i = 0; i < total_lines - 1; i++)
+            {
+                for (int j = 0; j < total_lines - i - 1; j++)
+                {
+                    if (strcmp(arr[j][0], arr[j + 1][0]) > 0)
+                    {
+                        // swapStrings(arr[j], arr[j + 1], total_lines, name, arr);
+                        char **temp = arr[j];
+                        arr[j] = arr[j + 1];
+                        arr[j + 1] = temp;
+                        swapStrings(arr[j], arr[j + 1], total_lines, name, arr);
+                    }
+                }
+            }
+        }
+        if (parameter == 2 || parameter == 3)
+        {
+            for (int i = 0; i < total_lines - 1; i++)
+            {
+                for (int j = 0; j < total_lines - i - 1; j++)
+                {
+                    if (atof(arr[j][parameter - 1]) > atof(arr[j + 1][parameter - 1]))
+                    {
+
+                        char **temp = arr[j];
+                        arr[j] = arr[j + 1];
+                        arr[j + 1] = temp;
+                        swapStrings(arr[j], arr[j + 1], total_lines, name, arr);
+                    }
+                }
+            }
+        }
+    }
+    if (mode == 2)
+    {
+        if (parameter == 1)
+        {
+            for (int i = 0; i < total_lines - 1; i++)
+            {
+                for (int j = 0; j < total_lines - i - 1; j++)
+                {
+                    if (strcmp(arr[j][0], arr[j + 1][0]) < 0)
+                    {
+                        // swapStrings(arr[j], arr[j + 1], total_lines, name, arr);
+                        char **temp = arr[j];
+                        arr[j] = arr[j + 1];
+                        arr[j + 1] = temp;
+                        swapStrings(arr[j], arr[j + 1], total_lines, name, arr);
+                    }
+                }
+            }
+        }
+        if (parameter == 2 || parameter == 3)
+        {
+            for (int i = 0; i < total_lines - 1; i++)
+            {
+                for (int j = 0; j < total_lines - i - 1; j++)
+                {
+                    if (atof(arr[j][parameter - 1]) < atof(arr[j + 1][parameter - 1]))
+                    {
+                        // swapStrings(arr[j], arr[j + 1], total_lines, name, arr);
+                        char **temp = arr[j];
+                        arr[j] = arr[j + 1];
+                        arr[j + 1] = temp;
+                        swapStrings(arr[j], arr[j + 1], total_lines, name, arr);
+                    }
+                }
+            }
+        }
+    }
+}
+char ***processLines(char **lines, size_t total_lines)
+{
+    char ***arr = (char ***)malloc(total_lines * sizeof(char **));
+
+    for (size_t i = 0; i < total_lines; i++)
+    {
+        arr[i] = (char **)malloc(COLUMNS * sizeof(char *));
+        for (int j = 0; j < COLUMNS; j++)
+        {
+            arr[i][j] = (char *)malloc(MORE_CHARS * sizeof(char));
+        }
+    }
+
+    for (size_t i = 0; i < total_lines; i++)
+    {
+        size_t j = 0; // Reset j for each line
+        char *token = strtok(lines[i], "|");
+
+        while (token != NULL && j < COLUMNS)
+        {
+            if (strlen(token) > 0)
+            {
+                strncpy(arr[i][j], token, MORE_CHARS - 1);
+                arr[i][j][MORE_CHARS - 1] = '\0';
+            }
+
+            printf("Field: %s\n", token);
+            token = strtok(NULL, "|");
+            j++;
+        }
+    }
+    for (size_t i = 0; i < total_lines; i++)
+    {
+        for (int j = 0; j < COLUMNS; j++)
+        {
+            removeWhiteSpaces(arr[i][j]);
+        }
+    }
+
+    return arr;
 }
 int SortFile(const char *name)
 {
@@ -205,14 +354,25 @@ int SortFile(const char *name)
     {
         printf("%s", lines[i]);
     }
+    fclose(file);
     // Sort File
-    processLines(lines, total_lines);
+    char ***data = processLines(lines, total_lines);
+    for (size_t i = 0; i < total_lines; i++)
+    {
+        for (int j = 0; j < COLUMNS; j++)
+        {
+            printf("%s ", data[i][j]);
+        }
+        printf("\n");
+    }
+    int choice = getInput("Sorting by: \n1. Oblast\n2. Population\n3. Square\n");
+    int mode = getInput("Sorting by: \n1. Ascending\n2. Descending\n");
+    SortArray(data, choice, total_lines, mode, name);
     for (size_t i = 0; i < total_lines; i++)
     {
         free(lines[i]);
     }
     free(lines);
-    fclose(file);
 }
 
 int handleInput(FILE *file, const char *name, int linecount)
@@ -247,7 +407,7 @@ int handleInput(FILE *file, const char *name, int linecount)
         removeWhiteSpaces(buffer);
         strcpy(arr[i][2], buffer);
 
-        fprintf(file, "| %-35s | %-25s | %-25s |\n", arr[i][0], arr[i][1], arr[i][2]);
+        fprintf(file, " %-25s| %-25s| %-25s\n", arr[i][0], arr[i][1], arr[i][2]);
     }
     for (int i = 0; i < linecount; i++)
     {
@@ -311,23 +471,24 @@ int PasteLine(const char *name, int write_line)
         {
             keep_reading = false;
         }
+
         else if (write_line == current_line)
         {
 
             printf("Enter the city: ");
             fgets(newLine, MAX_LINE, stdin);
             removeWhiteSpaces(newLine);
-            fprintf(temp, "| %-35s |", newLine);
+            fprintf(temp, " %-25s|", newLine);
 
             printf("Enter the population: ");
             fgets(newLine, MAX_LINE, stdin);
             removeWhiteSpaces(newLine);
-            fprintf(temp, " %-25s |", newLine);
+            fprintf(temp, " %-25s|", newLine);
 
             printf("Enter the square: ");
             fgets(newLine, MAX_LINE, stdin);
             removeWhiteSpaces(newLine);
-            fprintf(temp, " %-25s |\n", newLine);
+            fprintf(temp, " %-25s\n", newLine);
             fputs(buffer, temp);
         }
         else

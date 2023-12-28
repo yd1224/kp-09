@@ -1,20 +1,6 @@
-| ertyui                              | fyu                       | g                         |
-| tyui                                | ty                        | tyui                      |
-| OOOO                 | OOOOO                   | OOOOO                 |
-| OOO                                 | OOO                       | OOO                       |
-| ertyui                              | fyu                       | g                         |
-| tyui                                | ty                        | tyui                      |
-| OOOO                                  | OOOO                                  | OOOOO                                  |
-| ertyui                              | fyu                       | g                         |
-| OOOO                      | OOOO                      | OOOO                      |
-| tyui                                | ty                        | tyui                      |
-| ___                                 | ____                      | ___                       |
-| ertyui                              | fyu                       | g                         |
-| tyui                                | ty                        | tyui                      |
-
-| LLLL                                | LL                        | LL                        |
-| LL                                  | LL                        | LL                        |
-| >>>>>                               | >>>>>                     | >>>>>>                    |
-| PP                                  | PP                        | PP                        |
-| PP                                  | PP                        | PP                        |
-| PP                                  | PP                        | PP                        |
+ YYY                      | 400                      | 1000                     
+ YYY                      | 100                      | 1000                     
+ YYY                      | 100                      | 1000                     
+ EEE                      | 500                      | 2000                     
+ EEE                      | 200                      | 2000                     
+ EEE                      | 200                      | 2000                     
