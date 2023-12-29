@@ -108,7 +108,7 @@ char **ReadAllFileLinesIntoDynamicallyAllocatedArrayOfStrings(FILE *file)
 
                 lines[*total_lines][total_chars] = '\0';
 
-                *total_lines++;
+                (*total_lines)++;
             }
 
             break;
@@ -181,7 +181,49 @@ int compareRows(char **row1, char **row2, int column)
     }
     return 0; // Default case
 }
-int isFileSorted(const char *name, int column)
+int sortedAsc(char ***arr, size_t *lines, int col)
+{
+    for (int i = 0; i < (*lines) - 1; i++)
+    {
+        if (col == 0)
+        {
+            if (strcmp(arr[i][0], arr[i + 1][0]) >= 0)
+            {
+                return 0;
+            }
+        }
+        else if (col == 1 || col == 2)
+        {
+            if (atof(arr[i][col]) > atof(arr[i + 1][col]))
+            {
+                return 0;
+            }
+        }
+    }
+    return 5000;
+}
+int sortedDesc(char ***arr, size_t *lines, int col)
+{
+    for (int i = 0; i < (*lines) - 1; i++)
+    {
+        if (col == 0)
+        {
+            if (strcmp(arr[i][0], arr[i + 1][0]) <= 0)
+            {
+                return 0;
+            }
+        }
+        else if (col == 1 || col == 2)
+        {
+            if (atof(arr[i][col]) < atof(arr[i + 1][col]))
+            {
+                return 0;
+            }
+        }
+    }
+    return 10000;
+}
+int isFileSorted(const char *name)
 {
     int sortingOrder;
     FILE *file_ptr = fopen(name, "r");
@@ -191,67 +233,96 @@ int isFileSorted(const char *name, int column)
         return NOT_SORTED;
     }
     char ***data = processLines(ReadAllFileLinesIntoDynamicallyAllocatedArrayOfStrings(file_ptr), total_lines);
-    for (size_t i = 1; i < (*total_lines); i++)
+    // for (size_t i = 1; i < (*total_lines); i++)
+    // {
+    //     int cmp = compareRows(data[i - 1], data[i], column);
+    //     if (cmp != 0)
+    //     {
+    //         sortingOrder = (cmp < 0) ? ASCENDING : DESCENDING;
+    //         break;
+    //     }
+    // }
+
+    // fclose(file_ptr);
+    // return sortingOrder;
+    int pass;
+    // Check if sorted in ascending order
+    for (int i = 0; i < COLUMNS; i++)
     {
-        int cmp = compareRows(data[i - 1], data[i], column);
-        if (cmp != 0)
+        pass = sortedAsc(data, total_lines, i);
+        if (pass != 0)
         {
-            sortingOrder = (cmp < 0) ? ASCENDING : DESCENDING;
+            break;
+        }
+    }
+    printf("\n%d\n", pass);
+    // Check if sorted in descending order
+    if (pass != 0)
+    {
+        return pass;
+    }
+    pass = 0;
+    for (int i = 0; i < COLUMNS; i++)
+    {
+        pass = sortedDesc(data, total_lines, i);
+        if (pass != 0)
+        {
             break;
         }
     }
 
-    fclose(file_ptr);
-    return sortingOrder;
+    return pass;
 }
-int checkSortingMethod(const char *name)
+int checkSortingMethod(FILE *file_ptr)
 {
-    int column = 1;
-    int orderOblast = isFileSorted(name, column);
-    switch (orderOblast)
-    {
-    case ASCENDING:
-        printf("The file is sorted in ascending order by Oblast.\n");
-        break;
-    case DESCENDING:
-        printf("The file is sorted in descending order by Oblast.\n");
-        break;
-    case NOT_SORTED:
-        printf("The file is not sorted by Oblast.\n");
-        break;
-    }
 
-    // Check for Population (column 2)
-    column = 2;
-    int orderPopulation = isFileSorted(name, column);
-    switch (orderPopulation)
-    {
-    case ASCENDING:
-        printf("The file is sorted in ascending order by Population.\n");
-        break;
-    case DESCENDING:
-        printf("The file is sorted in descending order by Population.\n");
-        break;
-    case NOT_SORTED:
-        printf("The file is not sorted by Population.\n");
-        break;
-    }
+    char ***arr = processLines(ReadAllFileLinesIntoDynamicallyAllocatedArrayOfStrings(file_ptr), total_lines);
+    // int column = 1;
+    // int orderOblast = isFileSorted(name, column);
+    // switch (orderOblast)
+    // {
+    // case ASCENDING:
+    //     printf("The file is sorted in ascending order by Oblast.\n");
+    //     break;
+    // case DESCENDING:
+    //     printf("The file is sorted in descending order by Oblast.\n");
+    //     break;
+    // case NOT_SORTED:
+    //     printf("The file is not sorted by Oblast.\n");
+    //     break;
+    // }
 
-    // Check for Square (column 3)
-    column = 3;
-    int orderSquare = isFileSorted(name, column);
-    switch (orderSquare)
-    {
-    case ASCENDING:
-        printf("The file is sorted in ascending order by Square.\n");
-        break;
-    case DESCENDING:
-        printf("The file is sorted in descending order by Square.\n");
-        break;
-    case NOT_SORTED:
-        printf("The file is not sorted by Square.\n");
-        break;
-    }
+    // // Check for Population (column 2)
+    // column = 2;
+    // int orderPopulation = isFileSorted(name, column);
+    // switch (orderPopulation)
+    // {
+    // case ASCENDING:
+    //     printf("The file is sorted in ascending order by Population.\n");
+    //     break;
+    // case DESCENDING:
+    //     printf("The file is sorted in descending order by Population.\n");
+    //     break;
+    // case NOT_SORTED:
+    //     printf("The file is not sorted by Population.\n");
+    //     break;
+    // }
+
+    // // Check for Square (column 3)
+    // column = 3;
+    // int orderSquare = isFileSorted(name, column);
+    // switch (orderSquare)
+    // {
+    // case ASCENDING:
+    //     printf("The file is sorted in ascending order by Square.\n");
+    //     break;
+    // case DESCENDING:
+    //     printf("The file is sorted in descending order by Square.\n");
+    //     break;
+    // case NOT_SORTED:
+    //     printf("The file is not sorted by Square.\n");
+    //     break;
+    // }
 }
 
 void printTableHeader()
@@ -674,7 +745,9 @@ int WriteLines(const char *name)
 
 int PasteLine(const char *name, int write_line)
 {
-    FILE *file_ptr, *temp;
+    int sorted = isFileSorted(name);
+    FILE *file_ptr,
+        *temp;
     char temp_filename[TEMP_SIZE];
     char buffer[MAX_LINE];
     char newLine[MAX_LINE];
@@ -693,7 +766,7 @@ int PasteLine(const char *name, int write_line)
         printf("Error opening file(s) because: %s\n", buf);
         return 1;
     }
-    checkSortingMethod(name);
+    checkSortingMethod(file_ptr);
     bool keep_reading = true;
     int current_line = 1;
     do
