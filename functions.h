@@ -67,7 +67,7 @@ char ***processLines(char **lines, size_t *total_lines)
                 arr[i][j][MORE_CHARS - 1] = '\0';
             }
 
-            printf("Field: %s\n", token);
+            // printf("Field: %s\n", token);
             token = strtok(NULL, "|");
             j++;
         }
@@ -155,7 +155,7 @@ char **ReadAllFileLinesIntoDynamicallyAllocatedArrayOfStrings(FILE *file)
     lines = (char **)realloc(lines, sizeof(char *) * (*total_lines));
     for (size_t i = 0; i < (*total_lines); i++)
     {
-        printf("%s", lines[i]);
+        // printf("%s", lines[i]);
     }
     fclose(file);
     return lines;
@@ -240,7 +240,7 @@ SortingResult isFileSorted(const char *name)
         char buf[256];
         strerror_r(errno, buf, 256);
         printf("Error opening file because: %s\n", buf);
-     }
+    }
     char ***data = processLines(ReadAllFileLinesIntoDynamicallyAllocatedArrayOfStrings(file_ptr), total_lines);
 
     int i;
@@ -505,14 +505,14 @@ int SortFile(const char *name, int choice, int mode)
 
     // Sort File
     char ***data = processLines(ReadAllFileLinesIntoDynamicallyAllocatedArrayOfStrings(file), total_lines);
-    for (size_t i = 0; i < *total_lines; i++)
-    {
-        for (int j = 0; j < COLUMNS; j++)
-        {
-            printf("%s ", data[i][j]);
-        }
-        printf("\n");
-    }
+    // for (size_t i = 0; i < *total_lines; i++)
+    // {
+    //     for (int j = 0; j < COLUMNS; j++)
+    //     {
+    //         printf("%s ", data[i][j]);
+    //     }
+    //     printf("\n");
+    // }
 
     SortArray(data, choice, total_lines, mode, name);
     ReadFile(name);
