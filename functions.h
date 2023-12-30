@@ -253,7 +253,7 @@ SortingResult isFileSorted(const char *name)
 
     int i;
     // Check if sorted in ascending order
-    for (result.column = 0; i < COLUMNS; i++)
+    for (i = 0; i < COLUMNS; i++)
     {
         result.pass = sortedAsc(data, arrData.total_lines, i);
         if (result.pass != 0)
