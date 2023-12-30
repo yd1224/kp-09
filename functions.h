@@ -827,8 +827,13 @@ void OpenFile(const char *name)
         {
             printf("The file is sorted by square descendingly.\n");
         }
-        write_line = getInput("Number of line you want to paste: ");
-        PasteLine(name, write_line, res->column, res->pass);
+        if (res->pass == 0)
+        {
+            write_line = getInput("Number of line you want to paste: ");
+            PasteLine(name, write_line, res->column, res->pass);
+        }
+
+        PasteLine(name, 0, res->column, res->pass);
         break;
     case 5:
         delete_line = getInput("\nDelete line number: ");
