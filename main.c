@@ -6,6 +6,7 @@ int main()
     const int SIZE = 100;
     char input[SIZE];
     char name[SIZE];
+    initializeTotalLines();
     while (1)
     {
         printf("Choose: opening/creating/deleting a new file(open/create/delete/exit): ");
@@ -29,6 +30,14 @@ int main()
             printf("Please, enter the name of a file without the format (example): ");
             scanf("%s", &name);
             strcat(name, ".txt");
+            if (CheckIfFileExists(name))
+            {
+            }
+            else
+            {
+                printf("File with such name does not exist. Try again\n");
+                continue;
+            }
             OpenFile(name);
         }
         else if (strcmp(input, "exit") == 0)
