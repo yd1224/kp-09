@@ -31,7 +31,7 @@ int main()
             strcat(name, ".txt");
             OpenFile(name);
         }
-        else
+        else if (strcmp(input, "exit") == 0)
         {
             return 0;
         }
