@@ -851,8 +851,8 @@ void OpenFile(const char *name)
         DeleteLine(name, delete_line);
         break;
     case 6:
-        choice = getInput("Sorting by: \n1. Oblast\n2. Population\n3. Square\n");
-        mode = getInput("Sorting by: \n1. Ascending\n2. Descending\n");
+        choice = getInput("Sorting by: \n1. Oblast\n2. Population\n3. Square\nEnter choice: ");
+        mode = getInput("Sorting by: \n1. Ascending\n2. Descending\nEnter choice: ");
         SortFile(name, choice, mode);
         break;
     case 7:
